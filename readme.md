@@ -3,6 +3,7 @@ This repo is covering advent of code 2024 puzzles, as far as I can get
 
 ## folder structure
 The basic folder structure is:
+```
 ├── day1
 │   ├── input
 │   │   ├── data.txt
@@ -10,4 +11,4 @@ The basic folder structure is:
 │   ├── readme.md
 │   └── src
 │       └── main.py
-
+```

@@ -1,20 +1,26 @@
 import os
 import sys
 
-def isSafe(report):
+def generateDeltas(report):
     deltas = [int(report[i]) - int(report[i-1]) for i in range(1, len(report))]
-    #print(deltas)
-    sign = deltas[0]
-    for x in deltas:
-        if x == 0:
-            return False
-        if sign * x < 0:
-            return False
-        if abs(x) > 3:
-            return False
+    sign = 1 if deltas[0] > 0 else -1
+    return sign, deltas
 
+def isLevelDeltaSafe(sign, level):
+    if level == 0:
+        return False
+    if sign * level < 0:
+        return False
+    if abs(level) > 3:
+        return False
     return True
 
+def isReportSafe(report):
+    sign, deltas = generateDeltas(report)
+    for x in deltas:
+        if isLevelDeltaSafe(sign, x) == False:
+            return False
+    return True
 
 def main():
     use_exampleData = False
@@ -32,16 +38,19 @@ def main():
     for line in inputFile:
         rows.append(line.replace('\n','').split(' '))
 
-    #print(rows)
-    safe = 0
+    safe_part1 = 0
+    safe_part2 = 0
     for report in rows:
-        if isSafe(report):
-            #print("Safe")
-            safe += 1
-        # else:
-        #     print("Unsafe")
+        if isReportSafe(report):
+            safe_part1 += 1
+        else:
+            for i in range(len(report)):
+                dampenedReport = [x for ii, x in enumerate(report) if ii != i]
+                if isReportSafe(dampenedReport):
+                    safe_part2 += 1
+                    break
     
-    print(f"Total safe: {safe}")
+    print(f"Total part1 safe reports: {safe_part1}, dampened reports safe: {safe_part2}\r\nTotal part2 safe reports:{safe_part1 + safe_part2}")
 
 if __name__ == "__main__":
     main()

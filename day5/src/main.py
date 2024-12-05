@@ -71,7 +71,7 @@ for update in updates:
         middlePages_p1.append(int(update[middleIndex]))
     else:
         while 1:
-            if reorderUpdate2(update, rules):
+            if reorderUpdate(update, rules):
                 break
         
         middleIndex = int(len(update)/2)

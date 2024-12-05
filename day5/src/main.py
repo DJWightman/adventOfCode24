@@ -25,18 +25,22 @@ def checkUpdate(update, rules):
     return True
 
 def reorderUpdate(update, rules):
-    for i, page in enumerate(update):
-        if i == 0:
+    ret = True
+    for rule in rules:
+        if update.count(rule[0]) == 0 or update.count(rule[1]) == 0:
             continue
-        relevantRules = [rule for rule in rules if rule[0] == page]
-        prePage = update[:i]
-        for rule in relevantRules:
-            if prePage.count(rule[1]):
-                index = update.index(rule[1])
-                poppedPage = update.pop(index)
-                update.insert(i,poppedPage)
-                return False
-    return True
+
+        x = update.index(rule[0])
+        y = update.index(rule[1])
+        if x < y:
+            continue
+
+        elem = update.pop(y)
+        update.insert(x, elem)
+        ret = False
+    
+    return ret
+
 
 use_exampleData = False
 
@@ -55,6 +59,7 @@ for line in inputFile:
 
 rows, rules = getRules(rows)
 updates = getUpdates(rows)
+copyUpdates = updates.copy()
 
 rules = sorted(rules, key=lambda x: (x[0], x[1]))
 
@@ -66,7 +71,7 @@ for update in updates:
         middlePages_p1.append(int(update[middleIndex]))
     else:
         while 1:
-            if reorderUpdate(update, rules):
+            if reorderUpdate2(update, rules):
                 break
         
         middleIndex = int(len(update)/2)

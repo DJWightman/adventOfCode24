@@ -27,15 +27,15 @@ def get2sSolution(row):
 
     return 0
 
-def get3sSolution(row):
+def getSolution(row,factor):
     max = len(row[1]) - 1
-    for i in range(3**max):
+    for i in range(factor**max):
         nums = row[1].copy()
         ops = []
         x = i
         for bit in range(max):
-            ops.append(x % 3)
-            x = int(x/3)
+            ops.append(x % factor)
+            x = int(x/factor)
         
         soln = nums[0]
         for bit, op in enumerate(ops):

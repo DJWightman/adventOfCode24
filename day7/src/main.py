@@ -1,8 +1,9 @@
 import sys
 import os
 import util
+import time
 
-
+start_time = time.time()
 use_exampleData = False
 
 if use_exampleData:
@@ -28,6 +29,5 @@ for i, row in enumerate(rows):
 
 print(f"calibration Total: {calTotal}")
 print(f"Part2 calibration Total: {part2}")
-
-
+print(f"total time to execute: {time.time() - start_time}")
 

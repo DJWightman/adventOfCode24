@@ -23,8 +23,8 @@ part2 = 0
 
 for i, row in enumerate(rows):
     util.convertToInts(row)
-    calTotal += util.getSolution(row,2)
-    part2 += util.getSolution(row,3)
+    calTotal += util.getCalTotal(row,2)
+    part2 += util.getCalTotal(row,3)
 
 print(f"calibration Total: {calTotal}")
 print(f"Part2 calibration Total: {part2}")

@@ -4,49 +4,31 @@ def convertToInts(row):
     temp.remove('')
     row[1] = [int(x) for x in temp]
 
+def encodeOperators(ops, key, count, factor):
+    for op in range(count):
+        ops.append(key % factor)
+        key = int(key/factor)
 
-def getOperatorSizes(row):
-    return len(row[1])
+def calculateSolution(solnValues, key, factor):
+    ops = []
+    encodeOperators(ops, key, len(solnValues)-1, factor)
+    soln = solnValues[0]
+    for bit, op in enumerate(ops):
+        if op == 0:
+            soln += solnValues[1+bit]
+        elif op == 1:
+            soln *= solnValues[1+bit]
+        else:
+            soln = int(str(soln) + str(solnValues[1+bit]))
+    return soln
 
-
-def get2sSolution(row):
-    nums = row[1]
-    max = len(nums) - 1
-    for ii in range(2**max):
-        soln = nums[0]
-        for bit in range(max):
-            x = (ii >> bit) & 1
-            if x == 0:
-                soln += nums[1+bit]
-            else:
-                soln *= nums[1+bit]
-        #print(s)
-        if soln == row[0]:
-            #print("Soln found")
-            return row[0]
-
-    return 0
-
-def getSolution(row,factor):
-    max = len(row[1]) - 1
-    for i in range(factor**max):
-        nums = row[1].copy()
-        ops = []
-        x = i
-        for bit in range(max):
-            ops.append(x % factor)
-            x = int(x/factor)
-        
-        soln = nums[0]
-        for bit, op in enumerate(ops):
-            if op == 0:
-                soln += nums[1+bit]
-            elif op == 1:
-                soln *= nums[1+bit]
-            else:
-                soln = int(str(soln) + str(nums[1+bit]))
-        if soln == row[0]:
-            print(f"Found: {row[0]}, nums:{nums}")
-            return row[0]
-        
+def getCalTotal(line,factor):
+    target = line[0]
+    values = line[1]
+    max = len(values) - 1
+    for key in range(factor**max):
+        soln = calculateSolution(values, key, factor)
+        if soln == target:
+            print(f"Found: {target}")
+            return target
     return 0

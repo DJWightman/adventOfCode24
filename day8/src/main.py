@@ -33,14 +33,12 @@ print(f"Grid height: {len(grid)}, grid width: {len(grid[0])}")
 gridLength = len(grid)
 
 antinodes = []
+part2 = []
 for char in chars:
     locations = util.findCharLocations(grid, char)
     for i, location in enumerate(locations[:-1]):
-        antinodes += util.getAntinodes(location, locations[i+1:],gridLength - 1, antinodes)
+        util.getAntinodes(location, locations[i+1:],gridLength - 1, antinodes, True)
+        util.getAntinodes(location, locations[i+1:],gridLength - 1, part2, False)
 
-print(*antinodes, sep='\n')
-# antiGrid = [['.' for i in range(gridLength)] for ii in range(gridLength)]
-# for node in antinodes:
-#     antiGrid[node[1]][node[0]] = '#'
-# print(*antiGrid, sep='\n')
 print(f"Count of antinodes: {len(antinodes)}")
+print(f"Part2 Count of antinodes: {len(part2)}")

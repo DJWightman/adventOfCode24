@@ -21,8 +21,14 @@ line = rows[0]
 
 decoded = util.decodeLine(line)
 
-util.defragData(decoded)
-
+part1 = util.defragData(decoded)
 print(decoded)
-checksum = util.computeChecksum(decoded)
+
+checksum = util.computeChecksum(part1)
 print(f"checksum is: {checksum}")
+
+dd = util.doubleDecode(decoded)
+part2 = util.defrag2(dd)
+
+checksum2 = util.computeChecksum(part2)
+print(f"checksum2 is: {checksum2}")

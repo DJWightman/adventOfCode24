@@ -41,6 +41,6 @@ def getCalTotal(line,factor):
     for key in range(factor**max):
         soln = calculateSolution(values, key, factor)
         if soln == target:
-            print(f"Found: {target}")
+            #print(f"Found: {target}")
             return target
     return 0

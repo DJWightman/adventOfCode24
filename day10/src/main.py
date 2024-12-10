@@ -1,34 +1,49 @@
-import sys
-import os
 import util
+EXAMPLE_DATA = 0
 
-use_exampleData = False
+def findPath(trails, pos, trailPaths):
+    ret = {"part1": 0, "part2": 0 }
+    if trails[pos[1]][pos[0]] == 9:
+        if pos not in trailPaths:
+            trailPaths.append(tuple(pos))
+            ret["part1"] = 1
+        ret["part2"] = 1
+        return ret
 
-if use_exampleData:
-    fileName = "example.txt"
-else:
-    fileName = "data.txt"
+    directions = ((1,0), (-1,0), (0,1), (0,-1))
+    for d in directions:
+        x = pos[0] + d[0]
+        y = pos[1] + d[1]
 
-dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-filePath = dir + "/../input/" + fileName
-inputFile = open(filePath, 'r')
+        if (x not in [a for a in range(len(trails))] or
+            y not in [a for a in range(len(trails))] ):
+            continue
 
-rows = []
-for line in inputFile:
-    rows.append(line.replace('\n',''))
+        if  trails[y][x] - trails[pos[1]][pos[0]] == 1:
+            for key, value in findPath(trails, (x, y), trailPaths).items():
+                ret[key] += value
 
-trails = tuple([tuple([int(x) for x in row]) for row in rows])
+    return ret
 
-trailheads = [ (x , y) for y, row in enumerate(trails) for x, val in enumerate(row) if val == 0]
+def main():
+    trails = tuple(
+            [tuple([int(x) for x in line.replace('\n','')]) 
+                for line in open(util.get_filepath(EXAMPLE_DATA), 'r')]
+        )
 
-print(*trails, sep='\n')
-print(trailheads)
+    trailheads = [ (x , y)
+                    for y, row in enumerate(trails) 
+                        for x, val in enumerate(row) if val == 0
+                ]
 
-# scores[part1, part2]
-scores = [0,0]
-for trailhead in trailheads:
-    trailPaths = []
-    scores = list(map(lambda x, y: x + y, scores, util.findPath(trails, trailhead, trailPaths)))
+    scores = {"part1": 0, "part2": 0 }
+    for trailhead in trailheads:
+        trailPaths = []
+        for key, value in findPath(trails, trailhead, trailPaths).items():
+            scores[key] += value
 
-print(f"total sum: {scores[0]}")
-print(f"total P2 sum: {scores[1]}")
+    print(f"total sum: {scores["part1"]}")
+    print(f"total P2 sum: {scores["part2"]}")
+
+if __name__ == "__main__":
+    main()

@@ -3,7 +3,8 @@ EXAMPLE_DATA = 0
 
 def findPath(trails, pos, trailPaths):
     ret = {"part1": 0, "part2": 0 }
-    if trails[pos[1]][pos[0]] == 9:
+
+    if util.trailValue(trails, pos) == 9:
         if pos not in trailPaths:
             trailPaths.append(tuple(pos))
             ret["part1"] = 1
@@ -11,16 +12,14 @@ def findPath(trails, pos, trailPaths):
         return ret
 
     directions = ((1,0), (-1,0), (0,1), (0,-1))
-    for d in directions:
-        x = pos[0] + d[0]
-        y = pos[1] + d[1]
+    for offset in directions:
+        newPos = tuple(map(lambda x, y: x + y, pos, offset))
 
-        if (x not in [a for a in range(len(trails))] or
-            y not in [a for a in range(len(trails))] ):
+        if not util.posInRange(newPos, len(trails)):
             continue
 
-        if  trails[y][x] - trails[pos[1]][pos[0]] == 1:
-            for key, value in findPath(trails, (x, y), trailPaths).items():
+        if  util.trailValue(trails, newPos) - util.trailValue(trails, pos) == 1:
+            for key, value in findPath(trails, newPos, trailPaths).items():
                 ret[key] += value
 
     return ret

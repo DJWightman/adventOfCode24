@@ -10,3 +10,10 @@ def get_filepath(EXAMPLE_DATA):
     return dir + "/../input/" + get_filename(EXAMPLE_DATA)
     return open(filePath, 'r')
 
+def trailValue(trails, pos):
+    return trails[pos[1]][pos[0]]
+
+def posInRange(pos, length):
+    return False if (pos[0] < 0 or pos[0] >= length or 
+        pos[1] < 0 or pos[1] >= length) else True
+        

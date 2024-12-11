@@ -1,23 +1,33 @@
 import sys
 import os
 
-def blink(stones):
-    newStones = []
-    for stone in stones:
-        if stone == '0':
-            newStone = ['1']
-        elif len(stone) % 2 == 0:
-            splitLength = int(len(stone)/2)
-            newStone = [stone[:splitLength], str(int(stone[splitLength:]))]
-        else:
-            newStone = [str(int(stone)*2024)]
-        
-        newStones += newStone
+BLINK_COUNT = 75
 
-    return newStones
+cache = {}
+
+def blink(stone, depth):
+    if depth == 0:
+        return 1
+    
+    item = (stone, depth)
+    print(item)
+    if item in cache:
+        return cache[item]
+
+    if stone == '0':
+        ret = blink('1', depth -1)
+    elif len(stone) % 2 == 0:
+        splitLength = int(len(stone)/2)
+        ret = blink(stone[:splitLength], depth - 1) + blink(str(int(stone[splitLength:])), depth - 1)
+    else:
+        ret = blink(str(int(stone)*2024), depth - 1)
+    
+    cache[item] = ret
+
+    return ret
 
 
-use_exampleData = True
+use_exampleData = False
 
 if use_exampleData:
     fileName = "example.txt"
@@ -32,9 +42,10 @@ stones = []
 for line in inputFile:
     stones += line.replace('\n','').split(' ')
 
-for i in range(25):
-    print(f"blink: {i+1}")
-    stones = blink(stones)
-    print(f"num stones: {10*(len(stones)-1) + len(stones[-1])}")
+count = 0
+for stone in stones:
+    count += blink(stone, BLINK_COUNT )
+
+print(f"num stones: {count}")
 
 

@@ -1,7 +1,8 @@
 import sys
 import os
 
-BLINK_COUNT = 75
+P1_BLINK_COUNT = 25
+P2_BLINK_COUNT = 75
 
 cache = {}
 
@@ -10,7 +11,6 @@ def blink(stone, depth):
         return 1
     
     item = (stone, depth)
-    print(item)
     if item in cache:
         return cache[item]
 
@@ -42,10 +42,13 @@ stones = []
 for line in inputFile:
     stones += line.replace('\n','').split(' ')
 
-count = 0
-for stone in stones:
-    count += blink(stone, BLINK_COUNT )
+part1 = 0
+part2 = 0
 
-print(f"num stones: {count}")
+for stone in stones:
+    part1 += blink(stone, P1_BLINK_COUNT )
+    part2 += blink(stone, P2_BLINK_COUNT)
+
+print(f"num stones Part1: {part1} Part2: {part2}")
 
 

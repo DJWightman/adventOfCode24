@@ -4,15 +4,11 @@ import os
 P1_BLINK_COUNT = 25
 P2_BLINK_COUNT = 75
 
-cache = {}
-
+from functools import cache
+@cache
 def blink(stone, depth):
     if depth == 0:
         return 1
-    
-    item = (stone, depth)
-    if item in cache:
-        return cache[item]
 
     if stone == '0':
         ret = blink('1', depth -1)
@@ -21,8 +17,6 @@ def blink(stone, depth):
         ret = blink(stone[:splitLength], depth - 1) + blink(str(int(stone[splitLength:])), depth - 1)
     else:
         ret = blink(str(int(stone)*2024), depth - 1)
-    
-    cache[item] = ret
 
     return ret
 

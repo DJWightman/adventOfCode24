@@ -43,16 +43,60 @@ def getRegions(rows):
 
     return regions
 
-def getFencing(region):
+def getDeltas(length, xs, lastRow):
+    deltas = [[],[]]
+    for c in range(length):
+        if (c in lastRow and c in xs) or (c not in lastRow and c not in xs):
+            continue
+        elif c in lastRow:
+            deltas[0] += [c]
+        else:
+            deltas[1] += [c]
+    return deltas
+
+def checkDeltas(deltas):
+    sides = 0
+    for d in [0,1]:
+        if len(deltas[d]) > 0:
+            sides += 1
+        for i, x in enumerate(deltas[d][:-1]):
+            if deltas[d][i + 1] - deltas[d][i] > 1:
+                sides += 1
+    return sides
+
+def loopDimension(length, ps, dim):
+    sides = 0
+    lastRow = []
+    for r in range(length):
+        xs = [p[dim[0]] for p in ps if p[dim[1]] == r]
+        if len(xs) == 0:
+            continue
+        deltas = getDeltas(length, xs, lastRow)
+        sides += checkDeltas(deltas)
+        lastRow = xs
+    
+    xs = []
+    deltas = getDeltas(length, xs, lastRow)
+    sides += checkDeltas(deltas)
+
+    return sides
+
+def getSides(region, length):
+    ps = [pos for (pos, perim) in region]
+    return loopDimension(length, ps, (0,1)) + loopDimension(length, ps, (1,0))     
+
+def getFencing(region, length):
     area = len(region)
     perimeters = [pos[1] for pos in region]
     perimeter = sum(perimeters)
-    return area, perimeter, area * perimeter
+    # corners = findCorners(region)
+    sides = getSides(region, length)
+    return area, perimeter, sides
 
 use_exampleData = False
 
 if use_exampleData:
-    fileName = "example.txt"
+    fileName = "example4.txt"
 else:
     fileName = "data.txt"
 
@@ -68,10 +112,13 @@ print(*rows, sep='\n')
 regions = getRegions(rows)
 print(regions)
 
-totalPrice = 0
+totalPrice_p1 = 0
+totalPrice_p2 = 0
 for key, region in regions.items():
-    area, perimeter, price = getFencing(region)
-    print(area, perimeter, price)
-    totalPrice += price
+    area, perimeter, sides = getFencing(region, len(rows))
+    totalPrice_p1 += area * perimeter
+    totalPrice_p2 += area * sides
+    print(area, perimeter, sides, totalPrice_p1, totalPrice_p2)
 
-print(f"the total price is: {totalPrice}")
+print(f"the total price for part 1 is: {totalPrice_p1}")
+print(f"the total price for part 2 is: {totalPrice_p2}")

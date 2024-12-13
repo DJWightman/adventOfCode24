@@ -43,7 +43,7 @@ def getRegions(rows):
 
     return regions
 
-def getChanges(mapSize, sweepLine, prevSweep):
+def getNewSides(mapSize, sweepLine, prevSweep):
     changes = [[],[]]
     for c in range(mapSize):
         if (c in prevSweep and c in sweepLine) or (c not in prevSweep and c not in sweepLine):
@@ -52,9 +52,6 @@ def getChanges(mapSize, sweepLine, prevSweep):
             changes[0] += [c]
         else:
             changes[1] += [c]
-    return changes
-
-def checkChanges(changes):
     sides = 0
     for d in [0,1]:
         if len(changes[d]) > 0:
@@ -62,36 +59,32 @@ def checkChanges(changes):
         for i, x in enumerate(changes[d][:-1]):
             if changes[d][i + 1] - changes[d][i] > 1:
                 sides += 1
+
     return sides
 
-def sweepDimension(mapSize, ps, vertical):
+def sweepDimension(mapSize, regionPoints, vertical):
     x = 0 if vertical else 1
     y = 1 if vertical else 0
     sides = 0
     prevSweep = []
     for r in range(mapSize):
-        sweepLine = [p[x] for p in ps if p[y] == r]
+        sweepLine = [p[x] for p in regionPoints if p[y] == r]
         if len(sweepLine) == 0:
             continue
-        changes = getChanges(mapSize, sweepLine, prevSweep)
-        sides += checkChanges(changes)
+        sides += getNewSides(mapSize, sweepLine, prevSweep)
         prevSweep = sweepLine
-    
-    sweepLine = []
-    changes = getChanges(mapSize, sweepLine, prevSweep)
-    sides += checkChanges(changes)
+    lastSweepLine = []
+    return sides + getNewSides(mapSize, lastSweepLine, prevSweep)
 
-    return sides
-
-def getSides(region, mapSize):
-    ps = [pos for (pos, perim) in region]
-    return sweepDimension(mapSize, ps, True) + sweepDimension(mapSize, ps, False)     
+def getRegionSides(region, mapSize):
+    points = [point for (point, perim) in region]
+    return sweepDimension(mapSize, points, True) + sweepDimension(mapSize, points, False)     
 
 def getFencing(region, mapSize):
     area = len(region)
     perimeters = [pos[1] for pos in region]
     perimeter = sum(perimeters)
-    sides = getSides(region, mapSize)
+    sides = getRegionSides(region, mapSize)
     return area, perimeter, sides
 
 use_exampleData = False

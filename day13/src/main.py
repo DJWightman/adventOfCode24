@@ -1,5 +1,6 @@
 import os
 import sys
+import numpy as np
 
 COST_BUTTON_A = 3
 COST_BUTTON_B = 1
@@ -34,8 +35,18 @@ def findMinimumCosts2(rules):
 
     return (win, cost)
 
-use_exampleData = False
+def findMinimumCosts3(rules):
+    A, B, prize = rules
+    X = [A[0], B[0]]
+    Y = [A[1],B[1]]
+    result = np.linalg.solve(np.array([X, Y]), np.array(prize)).round().astype(int)
+    pos = ((result[0]*X[0]) + (result[1]*X[1]), (result[0]*Y[0]) + (result[1]*Y[1]))
+    pos = tuple(np.dot(np.array([X, Y]), result).tolist())
+    if pos == prize:
+        return (1,(int(result[0]) * COST_BUTTON_A) + (int(result[1]) * COST_BUTTON_B))
+    return (0, 0)
 
+use_exampleData = False
 if use_exampleData:
     fileName = "example.txt"
 else:
@@ -58,11 +69,11 @@ for i in range(0,len(rows), 4):
     B = (int(rows[i+1][rows[i+1].index('X+')+2:rows[i+1].index(', Y+')]), int(rows[i+1][rows[i+1].index('Y+')+2:]))
     prize = (int(rows[i+2][rows[i+2].index('X=')+2:rows[i+2].index(', Y=')]), int(rows[i+2][rows[i+2].index('Y=')+2:]))
     rules = (A, B, prize)
-    #print(rules)
-    total_P1 = tuple(map(lambda a, b: a + b, total_P1, findMinimumCosts2(rules)))
+    total_P1 = tuple(map(lambda a, b: a + b, total_P1, findMinimumCosts3(rules)))
+
     prize2 = tuple(map(lambda x: x + PART2_OFFSET, prize))
     rules2 = (A, B, prize2)
-    total_P2 = tuple(map(lambda a, b: a + b, total_P2, findMinimumCosts2(rules2)))
+    total_P2 = tuple(map(lambda a, b: a + b, total_P2, findMinimumCosts3(rules2)))
 
 
 print(f"Part 1: Total wins: {total_P1[0]}, Total cost for wins: {total_P1[1]}")

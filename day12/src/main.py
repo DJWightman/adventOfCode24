@@ -43,54 +43,55 @@ def getRegions(rows):
 
     return regions
 
-def getDeltas(length, xs, lastRow):
-    deltas = [[],[]]
-    for c in range(length):
-        if (c in lastRow and c in xs) or (c not in lastRow and c not in xs):
+def getChanges(mapSize, sweepLine, prevSweep):
+    changes = [[],[]]
+    for c in range(mapSize):
+        if (c in prevSweep and c in sweepLine) or (c not in prevSweep and c not in sweepLine):
             continue
-        elif c in lastRow:
-            deltas[0] += [c]
+        elif c in prevSweep:
+            changes[0] += [c]
         else:
-            deltas[1] += [c]
-    return deltas
+            changes[1] += [c]
+    return changes
 
-def checkDeltas(deltas):
+def checkChanges(changes):
     sides = 0
     for d in [0,1]:
-        if len(deltas[d]) > 0:
+        if len(changes[d]) > 0:
             sides += 1
-        for i, x in enumerate(deltas[d][:-1]):
-            if deltas[d][i + 1] - deltas[d][i] > 1:
+        for i, x in enumerate(changes[d][:-1]):
+            if changes[d][i + 1] - changes[d][i] > 1:
                 sides += 1
     return sides
 
-def loopDimension(length, ps, dim):
+def sweepDimension(mapSize, ps, vertical):
+    x = 0 if vertical else 1
+    y = 1 if vertical else 0
     sides = 0
-    lastRow = []
-    for r in range(length):
-        xs = [p[dim[0]] for p in ps if p[dim[1]] == r]
-        if len(xs) == 0:
+    prevSweep = []
+    for r in range(mapSize):
+        sweepLine = [p[x] for p in ps if p[y] == r]
+        if len(sweepLine) == 0:
             continue
-        deltas = getDeltas(length, xs, lastRow)
-        sides += checkDeltas(deltas)
-        lastRow = xs
+        changes = getChanges(mapSize, sweepLine, prevSweep)
+        sides += checkChanges(changes)
+        prevSweep = sweepLine
     
-    xs = []
-    deltas = getDeltas(length, xs, lastRow)
-    sides += checkDeltas(deltas)
+    sweepLine = []
+    changes = getChanges(mapSize, sweepLine, prevSweep)
+    sides += checkChanges(changes)
 
     return sides
 
-def getSides(region, length):
+def getSides(region, mapSize):
     ps = [pos for (pos, perim) in region]
-    return loopDimension(length, ps, (0,1)) + loopDimension(length, ps, (1,0))     
+    return sweepDimension(mapSize, ps, True) + sweepDimension(mapSize, ps, False)     
 
-def getFencing(region, length):
+def getFencing(region, mapSize):
     area = len(region)
     perimeters = [pos[1] for pos in region]
     perimeter = sum(perimeters)
-    # corners = findCorners(region)
-    sides = getSides(region, length)
+    sides = getSides(region, mapSize)
     return area, perimeter, sides
 
 use_exampleData = False

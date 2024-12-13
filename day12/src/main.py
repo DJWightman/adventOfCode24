@@ -45,17 +45,18 @@ def getRegions(rows):
 
 def getNewSides(mapSize, sweepLine, prevSweepLine):
     changes = {"removedPoint": [], "addedPoint" : []}
-    for c in range(mapSize):
-        if (c in prevSweepLine and c in sweepLine) or (c not in prevSweepLine and c not in sweepLine):
+    for point in range(mapSize):
+        if (point in prevSweepLine and point in sweepLine) or (point not in prevSweepLine and point not in sweepLine):
             continue
-        elif c in prevSweepLine:
-            changes["removedPoint"] += [c]
+        elif point in prevSweepLine:
+            changes["removedPoint"] += [point]
         else:
-            changes["addedPoint"] += [c]
+            changes["addedPoint"] += [point]
     newSides = 0
     for key, changeList in changes.items():
-        if len(changeList) > 0:
-            newSides += 1
+        if not changeList:
+            continue
+        newSides += 1
         for i, x in enumerate(changeList[:-1]):
             if changeList[i + 1] - changeList[i] > 1:
                 newSides += 1
@@ -100,10 +101,10 @@ inputFile = open(filePath, 'r')
 rows = []
 for line in inputFile:
     rows.append(line.replace('\n',''))
-print(*rows, sep='\n')
+#print(*rows, sep='\n')
 
 regions = getRegions(rows)
-print(regions)
+#print(regions)
 
 totalPrice_p1 = 0
 totalPrice_p2 = 0
@@ -111,7 +112,7 @@ for key, region in regions.items():
     area, perimeter, sides = getFencing(region, len(rows))
     totalPrice_p1 += area * perimeter
     totalPrice_p2 += area * sides
-    print(area, perimeter, sides, totalPrice_p1, totalPrice_p2)
+    #print(area, perimeter, sides, totalPrice_p1, totalPrice_p2)
 
 print(f"the total price for part 1 is: {totalPrice_p1}")
 print(f"the total price for part 2 is: {totalPrice_p2}")

@@ -44,23 +44,22 @@ def getRegions(rows):
     return regions
 
 def getNewSides(mapSize, sweepLine, prevSweepLine):
-    changes = [[],[]]
+    changes = {"removedPoint": [], "addedPoint" : []}
     for c in range(mapSize):
         if (c in prevSweepLine and c in sweepLine) or (c not in prevSweepLine and c not in sweepLine):
             continue
         elif c in prevSweepLine:
-            changes[0] += [c]
+            changes["removedPoint"] += [c]
         else:
-            changes[1] += [c]
-    sides = 0
-    for d in [0,1]:
-        if len(changes[d]) > 0:
-            sides += 1
-        for i, x in enumerate(changes[d][:-1]):
-            if changes[d][i + 1] - changes[d][i] > 1:
-                sides += 1
-
-    return sides
+            changes["addedPoint"] += [c]
+    newSides = 0
+    for key, changeList in changes.items():
+        if len(changeList) > 0:
+            newSides += 1
+        for i, x in enumerate(changeList[:-1]):
+            if changeList[i + 1] - changeList[i] > 1:
+                newSides += 1
+    return newSides
 
 def sweepDimension(mapSize, regionPoints, vertical):
     x = 0 if vertical else 1

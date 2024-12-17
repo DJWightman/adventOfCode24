@@ -127,7 +127,7 @@ def findLimits():
         prev = newRA
         newRA = newRA * 8
 
-    return min, max
+    return (min, max)
 
 
 def verify(RA, index):
@@ -143,8 +143,8 @@ def verify(RA, index):
     return ret
 
 
-def findTarget(min, max, target, depth):
-    
+def findTarget(limits, target, depth):
+    min, max = limits
     mid = (max + min) // 2
     
     if mid == min:
@@ -154,18 +154,18 @@ def findTarget(min, max, target, depth):
             return[max]
         return []
     
-    if depth == 15:
+    if depth == 5:
         return []
     
     ret = []
     if verify(mid, target):
         return [mid]
     
-    ret = findTarget(min, mid, target, depth + 1) + findTarget(mid, max, target, depth + 1)
+    ret = findTarget((min, mid), target, depth + 1) + findTarget((mid, max), target, depth + 1)
     return list(set(ret))
 
-def findMinInst(min, max, instruction_index):
-
+def findMinInst(limits, instruction_index):
+    min, max = limits
     mid = (max + min) // 2
     if min == mid:
         # print("verify", min, instruction_index)
@@ -177,11 +177,11 @@ def findMinInst(min, max, instruction_index):
         return min
     
     if verify(mid, instruction_index):
-        return findMinInst(min, mid, instruction_index)
-    return findMinInst(mid, max, instruction_index)
+        return findMinInst((min, mid), instruction_index)
+    return findMinInst((mid, max), instruction_index)
 
-def findMaxInst(min, max, instruction_index):
-
+def findMaxInst(limits, instruction_index):
+    min, max = limits
     mid = (max + min) // 2
     if min == mid:
         if verify(min, instruction_index):
@@ -192,50 +192,41 @@ def findMaxInst(min, max, instruction_index):
         return max
 
     if verify(mid, instruction_index):
-        return findMaxInst(mid, max, instruction_index)
-    return findMaxInst(min, mid, instruction_index)
+        return findMaxInst((mid, max), instruction_index)
+    return findMaxInst((min, mid), instruction_index)
+
+def checkFinalNumbers(limits):
+    min, max = limits
+    for i in range(min, max + 1):
+        if verify(i, 0):
+            results.add(i)
+
+def checkMids(limits, instruction_index, mids):
+    min, max = limits
+    mids.sort()
+    for m in mids:
+        print(instruction_index, min, m, max)
+        rmin = findMinInst((min, m), instruction_index)
+        rmax = findMaxInst((m, max), instruction_index)
+        findInstructionLimits((rmin, rmax), instruction_index - 1)
 
 seen = set()
-def findInstructionLimits(min, max, instruction_index):
+def findInstructionLimits(limits, instruction_index):
     global seen
-    mids = findTarget(min, max, instruction_index, 0)
+    if (limits, instruction_index) in seen:
+        return
+    seen.add((limits, instruction_index))
 
+    mids = findTarget(limits, instruction_index, 0)
     if len(mids) == 0:
         return
 
-    if (min, max, instruction_index) in seen:
-        return
-
-    seen.add((min, max, instruction_index))
-
     if instruction_index == 0:
-        print(instruction_index, min, max)
-        min = findMinInst(min, max, instruction_index)
-        max = findMaxInst(min, max, instruction_index)
-        if verify(min, instruction_index):
-            print("solved min: ", min)
-            results.add(min)
-            out = setRA_and_run(min)
-            print(','.join(out))
-        if verify(max, instruction_index):
-            print("soved Max:", max)
-            out = setRA_and_run(max)
-            print(','.join(out))
-            results.add(max)
-        print(instructions)
-        return
-
-    mids.sort()
-    # print(len(mids))
-    for m in mids:
-        print(instruction_index, min, m, max)
-        rmin = findMinInst(min, m, instruction_index)
-        rmax = findMaxInst(m, max, instruction_index)
-        findInstructionLimits(rmin, rmax, instruction_index - 1)
+        checkFinalNumbers(limits)
+    else:
+        checkMids(limits, instruction_index, mids)
 
 
 def getResults():
     print("Results")
     print(results)
-    for r in results:
-        return r

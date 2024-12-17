@@ -41,16 +41,8 @@ output = util.run()
 
 print(','.join(output))
 
-min, max = util.findLimits()
+limits = util.findLimits()
 
-if min > max:
-    print("Problem")
-    exit
+util.findInstructionLimits(limits, len(instructions) -1)
+util.getResults()
 
-
-diff = max - min
-print(f"min: {min} and max: {max}, diff: {diff}")
-
-
-util.findInstructionLimits(min, max, len(instructions) -1)
-x = util.getResults()

@@ -43,8 +43,14 @@ output = program.run()
 
 print("part1 results: ", ','.join(output))
 
-limits = util.findLimits()
-
-util.findInstructionLimits(limits, len(instructions) -1)
-util.getResults()
+min = 0
+for i in reversed(range(program.programLength())):
+    t = 0
+    while 1:
+        RegA = (min << 3) + t
+        if program.verify2(RegA, i):
+            min = RegA
+            break
+        t += 1
+print(f"part2 solution: {min}")
 

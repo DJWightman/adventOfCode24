@@ -120,6 +120,23 @@ def findInstructionLimits(limits, instruction_index):
         checkMids(limits, instruction_index, mids)
 
 
+def findPart2Solutions():
+    (min, max) = findLimits()
+
+    min = 0
+    for i in reversed(range(program.programLength())):
+        t = 0
+        while 1:
+            if min > max:
+                return
+            RegA = (min << 3) + t
+            if program.verify2(RegA, i):
+                min = RegA
+                break
+            t += 1
+    print(min)
+
+
 def getResults():
     print("Results")
     print(results)

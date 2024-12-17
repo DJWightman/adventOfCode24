@@ -115,3 +115,10 @@ def verify(RA, index):
             break
     
     return ret
+
+def verify2(RegA, index):
+    target = ','.join(map(str, list(instructions)[index:]))
+    out = ','.join(setRA_and_run(RegA))
+    if out == target:
+        return True
+    return False

@@ -1,6 +1,7 @@
 import os
 import sys
 import util
+import program
 
 use_exampleData = False
 if use_exampleData:
@@ -22,24 +23,25 @@ for line in inputFile:
         continue
     match g:
         case "Register A":
-            util.registers['A'] = int(a)
+            RegA = int(a)
         case "Register B":
-            util.registers['B'] = int(a)
+            RegB = int(a)
         case "Register C":
-            util.registers['C'] = int(a)
+            RegC = int(a)
         case "Program":
             instructions = tuple([int(x) for x in a.split(',')])
         case _:
             continue
 
-print(f"A:{util.registers['A']}, B:{util.registers['B']}, C:{util.registers['C']}")
-util.factory_defaults = (util.registers['A'], util.registers['B'], util.registers['C'])
-util.instructions = instructions
+print(f"Registers A:{RegA}, B:{RegB}, C:{RegC}")
+program.setRegisters(RegA, RegB, RegC)
+program.setInstructions(instructions)
 print(f"instructions: {instructions}")
 
-output = util.run()
+output = program.run()
 
-print(','.join(output))
+
+print("part1 results: ", ','.join(output))
 
 limits = util.findLimits()
 

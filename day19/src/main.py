@@ -31,11 +31,14 @@ print(availableDesigns)
 print(*desiredPatterns,sep='\n')
 
 possibleDesigns = 0
+part2Combinations = 0
 
 for desired in desiredPatterns:
     # print("desired Pattern:", desired)
     ret = util.desiredPatternPossible(availableDesigns, desired)
     if ret > 0:
         possibleDesigns += 1
+    part2Combinations += ret
 
 print("Part 1 - possible designs:", possibleDesigns)
+print("Part 2 - possible designs:", part2Combinations)

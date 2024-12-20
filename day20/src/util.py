@@ -1,4 +1,5 @@
 import heapq as hq
+from functools import cache
 
 def navigateGrid(grid, start, finish):
 
@@ -9,17 +10,16 @@ def navigateGrid(grid, start, finish):
 
     print(*grid, sep='\n')
 
-    hq.heappush(q, (0, start, [start], [0]))
+    hq.heappush(q, (0, start, [start]))
     directions = ((0,1), (0,-1), (1,0), (-1,0))
     gridsize = len(grid) - 1
 
     while q:
-        moves, pos, path, ps = hq.heappop(q)
+        moves, pos, path = hq.heappop(q)
 
         if pos == finish or grid[pos[1]][pos[0]] == 'E':
             print(f"End path in {moves} picoseconds")
-            ret = tuple([(a, ps[i]) for i, a in enumerate(path)])
-            return ret
+            return tuple(path)
 
         if pos in seen:
             continue
@@ -28,62 +28,74 @@ def navigateGrid(grid, start, finish):
 
         for d in directions:
             np = tuple(map(lambda a,b: a + b, pos, d))
-            if np in path:
+            if grid[np[1]][np[0]] == '#' or np in path or np in seen:
                 continue
-            if 0 < np[0] < gridsize and 0 < np[1] < gridsize and grid[np[1]][np[0]] != '#':
-                hq.heappush(q,(moves + 1, np, path + [np], ps + [moves + 1]))
+            if 0 < np[0] < gridsize and 0 < np[1] < gridsize:
+                hq.heappush(q,(moves + 1, np, path + [np]))
     
     return ()
 
 def findPart1ShortCuts(shortestPath):
 
     shortcuts = []
-    for (s, st) in shortestPath:
-        for (f, ft) in shortestPath:
-            if s == f:
+    for si in range(len(shortestPath)):
+        for fi in range(len(shortestPath)):
+            if shortestPath[si] == shortestPath[fi]:
                 continue
-
-            if (ft - st > 2 and ((abs(s[0] - f[0]) == 2 and s[1] == f[1]) or
+            s = shortestPath[si]
+            f = shortestPath[fi]
+            if (fi - si > 2 and ((abs(s[0] - f[0]) == 2 and s[1] == f[1]) or
                 (abs(s[1] - f[1]) == 2 and s[0] == f[0]))):
-                shortcuts.append((ft - st - 2, s,f))
+                shortcuts.append((fi - si - 2, s,f))
     
     return shortcuts
 
 
-def findShortcuts(grid, spath, start):
-
-    q = []
-    seen = []
-    shortCuts = []
-    tspath = [p for (p,t) in spath]
-
-    hq.heappush(q, (0, start, [start]))
+def findIndexShortcuts(grid, spath, start_index, allowedMoves, target):
     directions = ((0,1), (0,-1), (1,0), (-1,0))
     gridsize = len(grid) - 1
+
+    q = []
+    seen = set()
+    shortCuts = []
+    start = spath[start_index]
+    hq.heappush(q, (0, start, [start]))
 
     while q:
         moves, pos, path = hq.heappop(q)
 
-        if moves > 20:
+        if moves > allowedMoves:
             break
 
         if pos in seen:
             continue
         
-        seen.append(pos)
+        seen.add(pos)
         
-        if pos[0] in tspath:
-            (f, ft) = pos
-            (s, st) = start
-            (ts, tst) = spath[tspath.index(pos[0])]
-            if (ft - st) > (ft - tst):
-                shortCuts.append((ft - st - 2, s,f))
+        if pos != start and pos in spath:
+            finish_index = spath.index(pos)
+            finish = spath[spath.index(pos)]
+            savings = finish_index - start_index - moves
+            if savings >= target:
+                shortCuts.append((savings, start_index, finish_index))
+
 
         for d in directions:
-            np = tuple(map(lambda a,b: a + b, pos[0], d))
-            if np in path:
+            np = tuple(map(lambda a,b: a + b, pos, d))
+            if np in path or np in seen:
                 continue
             if 0 < np[0] < gridsize and 0 < np[1] < gridsize:
-                hq.heappush(q,(moves + 1, (np, start[1] + moves + 1), path + [np]))
+                # print("here", np)
+                hq.heappush(q,(moves + 1, np, path + [np]))
     
     return shortCuts
+
+
+def findShortcuts(grid, spath, allowedMoves, target):
+    ret = []
+    i = 0
+    for index in range(len(spath)):
+        print("Checking index: ", index)
+        ret += findIndexShortcuts(grid, spath, index, allowedMoves, target)
+
+    return ret

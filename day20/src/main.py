@@ -27,23 +27,23 @@ for i, line in enumerate(inputFile):
         finish = (line.index('E'),i)
 
 
-print(grid[start[1]][start[0]])
 
-if len(grid) != len(grid[0]):
-    print("unequal grid")
+# shortestPath = util.navigateGrid(grid, start, finish)
+# print(len(shortestPath))
 
-shortestPath = util.navigateGrid(grid, start, finish)
+shortestPath2 = util.navGrid(grid, start, finish)
+print(len(shortestPath2))
 
-# shortcuts = util.findPart1ShortCuts(shortestPath)
-# shortcuts.sort()
+# # shortcuts = util.findPart1ShortCuts(shortestPath)
+# # shortcuts.sort()
 
-shortcuts = util.findShortcuts(grid, shortestPath, 2, TARGET_SAVINGS)
+shortcuts = util.findShortcuts2(grid, shortestPath2, 2, TARGET_SAVINGS)
 
 targets = [ (p, s, f) for (p,s,f) in shortcuts if p >= TARGET_SAVINGS]
 
 print(f"Part 1: There are {len(targets)} cheats that save at least {TARGET_SAVINGS} picoseconds")
 
-shortcuts = util.findShortcuts(grid, shortestPath, 20, TARGET_SAVINGS)
+shortcuts = util.findShortcuts2(grid, shortestPath2, 20, TARGET_SAVINGS)
 
 targets = [ p for (p,s,f) in shortcuts if p >= TARGET_SAVINGS]
 

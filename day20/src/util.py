@@ -35,6 +35,22 @@ def navigateGrid(grid, start, finish):
     
     return ()
 
+def navGrid(grid, start, finish):
+    directions = ((0,1), (0,-1), (1,0), (-1,0))
+    # print(*grid, sep='\n')
+    pos = start
+    path = [start]
+    while pos != finish:
+        for d in directions:
+            np = tuple(map(lambda a,b: a + b, pos, d))
+            if np not in path and grid[np[1]][np[0]] != '#':
+                pos = np
+                path += [np]
+                break
+    
+    return path
+
+
 def findPart1ShortCuts(shortestPath):
 
     shortcuts = []
@@ -98,4 +114,19 @@ def findShortcuts(grid, spath, allowedMoves, target):
         print("Checking index: ", index)
         ret += findIndexShortcuts(grid, spath, index, allowedMoves, target)
 
+    return ret
+
+def findShortcuts2(grid, spath, allowedMoves, target):
+    ret = []
+    for i, start in enumerate(spath[:-target]):
+        for ii, end in enumerate(spath[i + target:], i + target):
+            moves = sum(list(map(lambda a, b: abs(a - b), end, start)))
+            if moves > allowedMoves:
+                continue
+            savings = ii - i - moves
+            if savings < target:
+                continue
+            
+            ret.append((savings, i, ii))
+    
     return ret

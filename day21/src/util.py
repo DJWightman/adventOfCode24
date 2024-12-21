@@ -117,47 +117,6 @@ def dirpad_directions3(code):
 
     return sequence
 
-def dirpad_directions4(code, depth):
-    start = (2,0)
-    pos = start
-    directions = ((0,1), (0,-1), (1,0), (-1,0))
-    ret = 0
-    for c in code:
-        newPos = getMoveCoords(c, dirpad)
-        move = tuple(map(lambda a,b: a - b, newPos, pos))
-        l = [-1,-1,-1,-1,-1,-1]
-        if move[0] != 0 and move[1] != 0:
-            if move[0] < 0:
-                mp = tuple(map(lambda a, b: a + b, pos, directions[3]))
-                if mp != (0,0):
-                    l[0] = chainDirectional(c, depth - 1)
-
-            elif move[0] > 0:
-                mp = tuple(map(lambda a, b: a + b, pos, directions[2]))
-                l[1] = chainDirectional(c, depth -1)
-
-            if move[1] > 0:
-                mp = tuple(map(lambda a, b: a + b, pos, directions[0]))
-                if mp != (0,0):
-                    l[2] = chainDirectional(c, depth -1)
-            elif move[1] < 0:
-                mp = tuple(map(lambda a, b: a + b, pos, directions[1]))
-                l[3] = chainDirectional(c, depth - 1)
-        
-        elif move[0] != 0:
-            move = tuple(map(lambda a,b: a - b, newPos, pos))
-            l[4] = chainDirectional(c, depth -1)
-        else:
-            move = tuple(map(lambda a,b: a - b, newPos, pos))
-            l[5] = chainDirectional(c, depth - 1)
-        
-        print("Ls",l)
-        while -1 in l:
-            l[l.index(-1)] = max(l)
-        ret += min(l)
-    return ret
-
-
 def getCodeNum(code):
     return int(code.replace('A',''))
 
@@ -173,80 +132,14 @@ def chainDirectional_old(code, chain):
 @cache
 def chainDirectional(code, depth):
 
-    ks0 = [x for x in dirpad_directions(code).replace('A', 'A,').split(',') if x]
-    ks1 = [x for x in dirpad_directions2(code).replace('A', 'A,').split(',') if x]
-    ks2 = [x for x in dirpad_directions3(code).replace('A', 'A,').split(',') if x]
+    ks = [x for x in dirpad_directions(code).replace('A', 'A,').split(',') if x]
 
-    # print("lengths: ", len(''.join(ks0)),', ', len(''.join(ks1)),', ', len(''.join(ks2)))
-    # ks = ks0 if len(''.join(ks0)) <= len(''.join(ks1)) else ks1
-    # ks = ks if len(''.join(ks)) <= len(''.join(ks2)) else ks2
-    # print("seqs: ", ''.join(ks),', ', ''.join(ks0),', ', ''.join(ks1),', ', ''.join(ks2))
-
-    # print(code, ':', ks)
     if depth == 1:
-        # ks = ks1 if len(''.join(ks1)) <= len(''.join(ks2)) else ks2
-        ks = ks0 if len(''.join(ks0)) <= len(''.join(ks1)) else ks1
-        ks = ks if len(''.join(ks)) <= len(''.join(ks2)) else ks2
-        print("found: ", ks, len(''.join(ks)))
         return len(''.join(ks))
-    
-    start = (2,0)
-    pos = start
-    directions = ((0,1), (0,-1), (1,0), (-1,0))
+
     ret = 0
-    for c in code:
-        newPos = getMoveCoords(c, dirpad)
-        while pos != newPos:
-            move = tuple(map(lambda a,b: a - b, newPos, pos))
-            l = [[-1,()],[-1,()]]
-            if move[0] != 0 and move[1] != 0:
-                if move[0] < 0:
-                    mp = tuple(map(lambda a, b: a + b, pos, directions[3]))
-                    if mp != (0,0):
-                        ks = moveX(-1)
-                        l[0] = (chainDirectional(ks, depth - 1), mp)
-
-                elif move[0] > 0:
-                    mp = tuple(map(lambda a, b: a + b, pos, directions[2]))
-                    ks = moveX(1)
-                    l[0] = (chainDirectional(ks, depth -1), mp)
-
-                if move[1] > 0:
-                    mp = tuple(map(lambda a, b: a + b, pos, directions[0]))
-                    if mp != (0,0):
-                        ks = moveY(1)
-                        l[1] = (chainDirectional(ks, depth -1), mp)
-                elif move[1] < 0:
-                    mp = tuple(map(lambda a, b: a + b, pos, directions[1]))
-                    ks = moveY(-1)
-                    l[1] = (chainDirectional(ks, depth - 1), mp)
-                
-                if l[0][0] <= l[1][0] and l[0][0] != -1:
-                    pos = l[0][1]
-                    ret += l[0][0]
-                else:
-                    pos = l[1][1]
-                    ret += l[1][0]
-                print(pos)
-                continue
-            elif move[0] != 0:
-                move = tuple(map(lambda a,b: a - b, newPos, pos))
-                ks = moveX(move[0]) + 'A'
-                l[0][0] = 0
-                for k in ks:
-                    l[0][0] += chainDirectional(k, depth -1)
-                pos = newPos
-            else:
-                move = tuple(map(lambda a,b: a - b, newPos, pos))
-                ks = moveY(move[1]) + 'A'
-                l[1][0] = 0
-                for k in ks:
-                    l[1][0] = chainDirectional(k, depth - 1)
-                pos = newPos
-            
-            l = [x for (x,y) in l]
-            
-            ret += max(l)
+    for k in ks:
+        ret += chainDirectional(k, depth -1)
 
     return ret
 

@@ -2,7 +2,7 @@ import os
 import sys
 import util
 
-use_exampleData = False
+use_exampleData = True
 if use_exampleData:
     fileName = "example1.txt"
     NUM_ROBOTS = 2
@@ -25,6 +25,7 @@ deltas = []
 newSecretNums = []
 for i, sn in enumerate(secretNumbers):
     num = sn
+    print(f"Secret Number {i} of {len(secretNumbers)}")
     for ii in range(2000):
         p1 = num % 10
         num = util.newSecretNumber(num)
@@ -33,9 +34,10 @@ for i, sn in enumerate(secretNumbers):
         if len(deltas) == 4:
             seq = tuple(deltas)
             if seq not in sequences:
-                sequences[seq] = [ 0 for iii in range(len(secretNumbers))]
-            if sequences[seq][i] == 0:
-                sequences[seq][i] = num % 10
+                sequences[seq] = [0, [ 0 for iii in range(len(secretNumbers))]]
+            if sequences[seq][1][i] == 0:
+                sequences[seq][1][i] = num % 10
+                sequences[seq][0] += num % 10
             keys.append(seq)
             deltas.pop(0)
 
@@ -46,19 +48,13 @@ for i in range(len(secretNumbers)):
 
 print("Sum is: ", sum(newSecretNums))
 
+sorted_sequences = sorted(sequences.items(), key=lambda x: x[1][0])
 
-maxBananas = 0
-bananas = []
-for i, key in enumerate(keys):
-    print(f"{i} of {len(keys)}: {int(i/len(keys)*100)}%")
-    bananas.append((sum(sequences[key]), key))
 
-bananas.sort()
-
-print(bananas[-1][1], " gives max bananas: ", bananas[-1][0])
+print(sorted_sequences[-1][0], " gives max bananas: ", sorted_sequences[-1][1][0])
 
 if use_exampleData:
-    print(sequences[bananas[-1][1]])
+    print(sorted_sequences[-1][1][1])
 
 
 

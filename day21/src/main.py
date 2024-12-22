@@ -31,7 +31,7 @@ for code in codes:
     for c in code:
         s, ks = util.shortestPath(c, pos, 2)
         
-        l, ks2 = util.shortestPath2(c, pos, 25)
+        l, ks2 = util.shortestPath2(c, pos, 2)
         # print(l)
         sequence += s
         herp += l

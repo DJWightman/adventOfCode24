@@ -136,46 +136,36 @@ def dirpad_directions4(char, start):
     ret = ['','']
     # Go Y first
     pos = start
-    while pos != newPos:
-        if pos[0] > 4 or pos[1] > 4:
-            exit()
-        move = tuple(map(lambda a,b: a - b, newPos, pos))
-        if move[0] != 0 and move[1] != 0:
-            mp = (pos[0], pos[1] + (move[1] // abs(move[1])))
-            if mp != (0,0):
-                ret[0] += moveY(move[1] // abs(move[1]))
-            else:
-                mp = (pos[0] + (move[0] // abs(move[0])), pos[1])
-                ret[0] += moveX(move[0] // abs(move[0]))
-        elif move[1] != 0:
-            mp = (pos[0], pos[1] + move[1])
-            ret[0] += moveY(move[1])
-        elif move[0] != 0:
-            mp = (pos[0] + move[0], pos[1])
-            ret[0] += moveX(move[0])
-        
-        pos = mp
-    ret[0] += 'A'
+    mult = ((0,1), (1,0))
 
-    # Go X second
-    pos = start
-    while pos != newPos:
-        move = tuple(map(lambda a,b: a - b, newPos, pos))
-        if move[0] != 0 and move[1] != 0:
-            mp = (pos[0] + (move[0] // abs(move[0])), pos[1])
-            if mp != (0,0):
-                ret[1] += moveX(move[0] // abs(move[0]))
-            else:
-                mp = (pos[0], pos[1] + (move[1] // abs(move[1])))
-                ret[1] += moveY(move[1] // abs(move[1]))
-        elif move[1] != 0:
-            mp = (pos[0], pos[1] + move[1])
-            ret[1] += moveY(move[1])
-        else:
-            mp = (pos[0] + move[0], pos[1])
-            ret[1] += moveX(move[0])
-        pos = mp
-    ret[1] += 'A'
+    for i, r in enumerate(ret):
+        while pos != newPos:
+            if pos[0] > 4 or pos[1] > 4:
+                exit()
+            move = tuple(map(lambda a,b: a - b, newPos, pos))
+            k = ((move[0] // abs(move[0]) if move[0] != 0 else 0),  (move[1] // abs(move[1])) if move[1]!= 0 else 0)
+            print("move", move, k)
+            if move[0] != 0 and move[1] != 0:
+
+                mp = (pos[0] + (k[0] * mult[i][0]), pos[1] + (k[1]* mult[i][1]))
+                if mp != (0,0):
+                    ret[i] += (moveX(k[0]) * mult[i][0]) + (moveY(k[1]) * mult[i][1])
+                else:
+                    mp = (pos[0] + (k[0] * mult[i][1]), pos[1] + (k[1]* mult[i][0]))
+                    ret[i] += (moveX(k[0]) * mult[i][1]) + (moveY(k[1]) * mult[i][0])
+
+            elif move[1] != 0:
+                mp = (pos[0], pos[1] + move[1])
+                ret[i] += moveY(move[1])
+
+            elif move[0] != 0:
+                mp = (pos[0] + move[0], pos[1])
+                ret[i] += moveX(move[0])
+
+            pos = mp
+
+        ret[i] += 'A'
+
     return ret
 
 @cache

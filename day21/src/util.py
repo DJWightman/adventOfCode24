@@ -129,18 +129,76 @@ def chainDirectional_old(code, chain):
     return ks
 
 
+def dirpad_directions4(char, start):
+    
+    newPos = getMoveCoords(char, dirpad)
+
+    ret = ['','']
+    # Go Y first
+    pos = start
+    while pos != newPos:
+        if pos[0] > 4 or pos[1] > 4:
+            exit()
+        move = tuple(map(lambda a,b: a - b, newPos, pos))
+        if move[0] != 0 and move[1] != 0:
+            mp = (pos[0], pos[1] + (move[1] // abs(move[1])))
+            if mp != (0,0):
+                ret[0] += moveY(move[1] // abs(move[1]))
+            else:
+                mp = (pos[0] + (move[0] // abs(move[0])), pos[1])
+                ret[0] += moveX(move[0] // abs(move[0]))
+        elif move[1] != 0:
+            mp = (pos[0], pos[1] + move[1])
+            ret[0] += moveY(move[1])
+        elif move[0] != 0:
+            mp = (pos[0] + move[0], pos[1])
+            ret[0] += moveX(move[0])
+        
+        pos = mp
+    ret[0] += 'A'
+
+    # Go X second
+    pos = start
+    while pos != newPos:
+        move = tuple(map(lambda a,b: a - b, newPos, pos))
+        if move[0] != 0 and move[1] != 0:
+            mp = (pos[0] + (move[0] // abs(move[0])), pos[1])
+            if mp != (0,0):
+                ret[1] += moveX(move[0] // abs(move[0]))
+            else:
+                mp = (pos[0], pos[1] + (move[1] // abs(move[1])))
+                ret[1] += moveY(move[1] // abs(move[1]))
+        elif move[1] != 0:
+            mp = (pos[0], pos[1] + move[1])
+            ret[1] += moveY(move[1])
+        else:
+            mp = (pos[0] + move[0], pos[1])
+            ret[1] += moveX(move[0])
+        pos = mp
+    ret[1] += 'A'
+    return ret
+
 @cache
 def chainDirectional(code, depth):
 
-    ks = [x for x in dirpad_directions(code).replace('A', 'A,').split(',') if x]
+    if depth == 0:
+        print("code", code, len(code))
+        return len(code)
 
-    if depth == 1:
-        return len(''.join(ks))
+    pos = (2,0)
 
     ret = 0
-    for k in ks:
-        ret += chainDirectional(k, depth -1)
-
+    for c in code:
+        ts = dirpad_directions4(c, pos)
+        print("ts", code, c, ts, pos)
+        r1 = chainDirectional(ts[0], depth - 1)
+        r2 = chainDirectional(ts[1], depth - 1)
+        if r1 <= r2:
+            ret += r1
+        else:
+            ret += r2
+        pos = getMoveCoords(c, dirpad)
+    print("ret", r1, r2, ret)
     return ret
 
 

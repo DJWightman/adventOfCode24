@@ -31,12 +31,12 @@ for code in codes:
     for c in code:
         s, ks = util.shortestPath(c, pos, 2)
         
-        l, ks2 = util.shortestPath2(c, pos, 2)
-        print(l)
+        l, ks2 = util.shortestPath2(c, pos, 25)
+        # print(l)
         sequence += s
         herp += l
-        print(ks, ":", ks2)
-        print(len(s),':', l)
+        # print(ks, ":", ks2)
+        # print(len(s),':', l)
 
         pos = util.getMoveCoords(c, util.keypad)
 

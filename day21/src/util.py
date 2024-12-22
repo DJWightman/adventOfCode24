@@ -48,75 +48,6 @@ def keypad_directions(code):
 
     return sequence
 
-def dirpad_directions(code):
-    start = (2,0)
-    pos = start
-    sequence = ''
-    for c in code:
-        newPos = getMoveCoords(c, dirpad)
-        move = tuple(map(lambda a,b: a - b, newPos, pos))
-        
-        if move[1] > 0:
-            s = moveY(move[1]) + moveX(move[0]) + 'A'
-        else:
-            s = moveX(move[0]) + moveY(move[1]) + 'A'
-        sequence += s
-        pos = newPos
-
-    return sequence
-
-def dirpad_directions2(code):
-    start = (2,0)
-    pos = start
-    sequence = ''
-    for c in code:
-        newPos = getMoveCoords(c, dirpad)
-        s = ''
-        while pos != newPos:
-            move = tuple(map(lambda a,b: a - b, newPos, pos))
-            if move[1] != 0:
-                dir = move[1] // abs(move[1])
-                mp = (pos[0], pos[1] + dir)
-                if mp != (0,0):
-                    s += moveY(dir)
-                    pos = mp
-                else:
-                    dir = move[0] // abs(move[0])
-                    s += moveX(dir)
-                    pos = (pos[0] + dir, pos[1])
-            else:
-                s += moveX(move[0])
-                pos = newPos
-        s += 'A'
-        sequence += s
-
-    return sequence
-
-def dirpad_directions3(code):
-    start = (2,0)
-    pos = start
-    sequence = ''
-    for c in code:
-        newPos = getMoveCoords(c, dirpad)
-        s = ''
-        while pos != newPos:
-            move = tuple(map(lambda a,b: a - b, newPos, pos))
-            if move[0] != 0:
-                mp = (pos[0] + (move[0] // abs(move[0])), pos[1])
-                if mp != (0,0):
-                    s += moveX(move[0] // abs(move[0]))
-                    pos = mp
-                else:
-                    s += moveY(move[1] // abs(move[1]))
-                    pos = (pos[0], pos[1] + (move[1] // abs(move[1])))
-            else:
-                s += moveY(move[1])
-                pos = newPos
-        s += 'A'
-        sequence += s
-
-    return sequence
-
 def getCodeNum(code):
     return int(code.replace('A',''))
 
@@ -129,24 +60,21 @@ def chainDirectional_old(code, chain):
     return ks
 
 
-def dirpad_directions4(char, start):
+def dirpad_directions(char, start):
     
     newPos = getMoveCoords(char, dirpad)
 
     ret = ['','']
     # Go Y first
-    pos = start
     mult = ((0,1), (1,0))
 
     for i, r in enumerate(ret):
+        pos = start
         while pos != newPos:
-            if pos[0] > 4 or pos[1] > 4:
-                exit()
             move = tuple(map(lambda a,b: a - b, newPos, pos))
             k = ((move[0] // abs(move[0]) if move[0] != 0 else 0),  (move[1] // abs(move[1])) if move[1]!= 0 else 0)
             print("move", move, k)
             if move[0] != 0 and move[1] != 0:
-
                 mp = (pos[0] + (k[0] * mult[i][0]), pos[1] + (k[1]* mult[i][1]))
                 if mp != (0,0):
                     ret[i] += (moveX(k[0]) * mult[i][0]) + (moveY(k[1]) * mult[i][1])
@@ -179,7 +107,7 @@ def chainDirectional(code, depth):
 
     ret = 0
     for c in code:
-        ts = dirpad_directions4(c, pos)
+        ts = dirpad_directions(c, pos)
         print("ts", code, c, ts, pos)
         r1 = chainDirectional(ts[0], depth - 1)
         r2 = chainDirectional(ts[1], depth - 1)
@@ -193,69 +121,6 @@ def chainDirectional(code, depth):
 
 
 def shortestPath(c, pos, chain):
-    newPos = getMoveCoords(c, keypad)
-
-    q = []
-    seen = set()
-    sequence = ''
-    keySequence = ''
-    hq.heappush(q, (len(sequence), sequence, keySequence, pos, [pos]))
-
-    directions = ((0,1), (0,-1), (1,0), (-1,0))
-
-
-    while q:
-        length, sequence, keySequence, pos, path = hq.heappop(q)
-
-        if pos == newPos:
-            return sequence, keySequence
-
-        if pos in seen:
-            continue
-
-        seen.add(pos)
-
-        move = tuple(map(lambda a,b: a - b, newPos, pos))
-
-        if move[0] != 0 and move[1] != 0:
-            if move[0] < 0:
-                mp = tuple(map(lambda a, b: a + b, pos, directions[3]))
-                if mp != (0,3):
-                    ks = keySequence + moveX(-1)
-                    s = chainDirectional_old(ks, chain)
-                    hq.heappush(q,(len(s), s, ks, mp, path + [mp]))
-
-            elif move[0] > 0:
-                mp = tuple(map(lambda a, b: a + b, pos, directions[2]))
-                ks = keySequence + moveX(1)
-                s = chainDirectional_old(ks, chain)
-                hq.heappush(q,(len(s), s, ks, mp, path + [mp]))
-
-            if move[1] > 0:
-                mp = tuple(map(lambda a, b: a + b, pos, directions[0]))
-                if mp != (0,3):
-                    ks = keySequence + moveY(1)
-                    s = chainDirectional_old(ks, chain)
-                    hq.heappush(q,(len(s), s, ks, mp, path + [mp]))
-            elif move[1] < 0:
-                mp = tuple(map(lambda a, b: a + b, pos, directions[1]))
-                ks = keySequence + moveY(-1)
-                s = chainDirectional_old(ks, chain)
-                hq.heappush(q,(len(s), s, ks, mp, path + [mp]))
-        
-        elif move[0] != 0:
-            move = tuple(map(lambda a,b: a - b, newPos, pos))
-            ks = keySequence + moveX(move[0]) + 'A'
-            s = chainDirectional_old(ks, chain)
-            hq.heappush(q,(len(s), s, ks, newPos, path + [newPos]))
-        else:
-            move = tuple(map(lambda a,b: a - b, newPos, pos))
-            ks = keySequence + moveY(move[1]) + 'A'
-            s = chainDirectional_old(ks, chain)
-            hq.heappush(q,(len(s), s, ks, newPos, path + [newPos]))
-
-
-def shortestPath2(c, pos, chain):
     newPos = getMoveCoords(c, keypad)
 
     q = []

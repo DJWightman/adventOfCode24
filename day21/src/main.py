@@ -22,40 +22,33 @@ for line in inputFile:
 print(*codes, sep='\n')
 
 
-complexity = []
-derp = []
+p1_complexity = []
+p2_complexity = []
 for code in codes:
-    sequence = ''
+    p1_len = 0
+    p2_len = 0
     pos = (2,3)
-    herp = 0
     for c in code:
-        s, ks = util.shortestPath(c, pos, 2)
-        
-        l, ks2 = util.shortestPath2(c, pos, 2)
-        # print(l)
-        sequence += s
-        herp += l
-        # print(ks, ":", ks2)
-        # print(len(s),':', l)
-
+        l1, ks = util.shortestPath(c, pos, 2)
+        l2, ks2 = util.shortestPath(c, pos, 25)
+        p1_len += l1
+        p2_len += l2
         pos = util.getMoveCoords(c, util.keypad)
 
-    # print(sequence)
-    # print(len(sequence))
-    # print(util.getCodeNum(code))
-    derp += [(herp, util.getCodeNum(code))]
-    complexity += [ (len(sequence) , util.getCodeNum(code))]
+
+    p2_complexity += [(p2_len, util.getCodeNum(code))]
+    p1_complexity += [(p1_len , util.getCodeNum(code))]
 
 
-print(complexity)
-print(derp)
+print(p1_complexity)
+print(p2_complexity)
 
-complexity = [ a * b for a,b in complexity]
-print(complexity)
+p1_complexity = [ a * b for a,b in p1_complexity]
+print(p1_complexity)
 
-derp = [ a * b for a,b in derp]
-print(derp)
+p2_complexity = [ a * b for a,b in p2_complexity]
+print(p2_complexity)
 
-print(f"Total part 1 complexity: {sum(complexity)}")
+print(f"Total part 1 p1_complexity: {sum(p1_complexity)}")
 
-print(f"Total part 2 complexity: {sum(derp)}")
+print(f"Total part 2 p1_complexity: {sum(p2_complexity)}")

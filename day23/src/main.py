@@ -1,6 +1,6 @@
 import os
 import sys
-import heapq as hq
+import util
 
 use_exampleData = False
 if use_exampleData:
@@ -25,42 +25,24 @@ for line in inputFile:
 
 # print(*networks, sep='\n')
 
-triples = set()
-possible_chiefs = 0
+triple_networks = set()
+possible_chief_networks = 0
 networks = set()
 max_network = ()
-max = 0
-for key, connections in computers.items():
-    for c in connections:
-        network = {key, c}
-        for third in computers[c]:
-            if third in connections:
-                temp = [key, c, third]
-                temp.sort()
-                chief = False
-                if 't' == key[0] or 't' == c[0] or 't' == third[0]:
-                    chief = True
-                if (chief, tuple(temp)) not in triples:
-                    triples.add((chief, tuple(temp)))
-                    if chief:
-                        possible_chiefs += 1
-        for k2, c2 in computers.items():
-            if k2 in network:
-                continue
-            inNetwork = True
-            for nc in network:
-                if nc not in c2:
-                    inNetwork = False
-                    break
-            if inNetwork:
-                network.add(k2)
-        networks.add(tuple(sorted(network)))
-        if len(tuple(sorted(network))) > max:
-            max = len(tuple(sorted(network)))
-            max_network = tuple(sorted(network))
+max_network_size = 0
+for c1, c1_network in computers.items():
+    for c2 in c1_network:
+        possible_chief_networks += util.part1(computers, c1, c2, c1_network, triple_networks)
+
+        network = util.part2_createNetwork(computers, c1, c2)
+        networks.add(network)
+
+        if len(network) > max_network_size:
+            max_network = network
+            max_network_size = len(network)
 
 
-print(*triples,sep='\n')
-print(possible_chiefs)
+print(*triple_networks,sep='\n')
+print(possible_chief_networks)
 
 print(','.join(max_network))
